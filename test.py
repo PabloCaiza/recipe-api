@@ -8,15 +8,6 @@ import json
 
 
 
-s3 = boto3.resource(
-    service_name="s3",
-    aws_access_key_id="AKIAQGEMW2UXS5REWBV7",
-    aws_secret_access_key="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",
-    region_name="us-east-1"
-)
-s3.Bucket('ingredients-detector-model').download_file('saved_model/saved_model.pb', 'saved_model/saved_model.pb')
-s3.Bucket('ingredients-detector-model').download_file('saved_model/variables/variables.data-00000-of-00001', 'saved_model/variables/variables.data-00000-of-00001')
-s3.Bucket('ingredients-detector-model').download_file('saved_model/variables/variables.index', 'saved_model/variables/variables.index')
 
 PATH_TO_SAVED_MODEL = "saved_model"
 
