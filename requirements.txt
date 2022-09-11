@@ -4,8 +4,5 @@ numpy==1.22.4
 Pillow==9.2.0
 gunicorn==20.1.0
 boto3==1.24.63
-
-
 Flask-PyMongo==2.3.0
-pymongo==4.2.0
-bson==0.5.10
+pymongo[srv]==3.11
