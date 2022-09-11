@@ -65,6 +65,7 @@ def predictIngredientes():
     recipes = mongo.db.recipes.find()
     response = json_util.dumps(recipes)
     recipes = json.loads(response)
+    print(recipes)
     possibleRecipes = []
     for r in recipes:
         hasAnyIngredient = False
