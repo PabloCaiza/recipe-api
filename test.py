@@ -1,31 +1,36 @@
 import tensorflow as tf
-
 import numpy as np
 from PIL import Image
 from flask import Flask, jsonify, request
 from flask_pymongo import PyMongo
 from bson import json_util
-import boto3
+from dotenv import load_dotenv
 import json
+import os
 
+load_dotenv()
 app = Flask(__name__)
 PATH_TO_SAVED_MODEL = "saved_model"
-app.config["MONGO_URI"] = "mongodb+srv://OtterFox:1XTQqHNw9X7XvkXs@cluster0.uwltrza.mongodb.net/mineria"
+
+app.config["MONGO_URI"] = "mongodb+srv://{}:{}@cluster0.uwltrza.mongodb.net/mineria".format(os.getenv("MONGO_USERNAME"),
+                                                                                            os.getenv("MONGO_PASSWORD"))
 detect_fn = tf.saved_model.load(PATH_TO_SAVED_MODEL)
-category_index={
- 1: {'id': 1, 'name': 'egg'},
- 2: {'id': 2, 'name': 'cheese'}, 
- 3: {'id': 3, 'name': 'milk'},
- 4: {'id': 4, 'name': 'lemon'},
- 5: {'id': 5, 'name': 'onion'}, 
- 6: {'id': 6, 'name': 'garlic'}, 
- 7: {'id': 7, 'name': 'potatoe'}, 
- 8: {'id': 8, 'name': 'green banana'}, 
- 9: {'id': 9, 'name': 'tomato'}, 
- 10: {'id': 10, 'name': 'chicken'}}
+category_index = {
+    1: {'id': 1, 'name': 'egg'},
+    2: {'id': 2, 'name': 'cheese'},
+    3: {'id': 3, 'name': 'milk'},
+    4: {'id': 4, 'name': 'lemon'},
+    5: {'id': 5, 'name': 'onion'},
+    6: {'id': 6, 'name': 'garlic'},
+    7: {'id': 7, 'name': 'potatoe'},
+    8: {'id': 8, 'name': 'green banana'},
+    9: {'id': 9, 'name': 'tomato'},
+    10: {'id': 10, 'name': 'chicken'}}
+
 
 def load_image_into_numpy_array(path):
     return np.array(Image.open(path))
+
 
 def detectIngredients(image):
     image_np = load_image_into_numpy_array(image)
@@ -53,8 +58,6 @@ def detectIngredients(image):
     return final_categories
 
 
-
-
 @app.route('/predictIngredients', methods=['POST'])
 def predictIngredientes():
     uploaded_file = request.files['file']
@@ -65,7 +68,6 @@ def predictIngredientes():
     recipes = mongo.db.recipes.find()
     response = json_util.dumps(recipes)
     recipes = json.loads(response)
-    print(recipes)
     possibleRecipes = []
     for r in recipes:
         hasAnyIngredient = False
@@ -83,11 +85,12 @@ def predictIngredientes():
     diccionario = {
         "status": 200,
         "data": response,
-        "ingredients":ingredients
+        "ingredients": ingredients
     }
     return jsonify(diccionario)
 
+
 mongo = PyMongo(app)
 if __name__ == '__main__':
-    app.run(debug=True,host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0')
     print(__name__)
