@@ -60,10 +60,13 @@ def detectIngredients(image):
 
 @app.route('/predictIngredients', methods=['POST'])
 def predictIngredientes():
-    uploaded_file = request.files['file']
-    print("files")
-    print(uploaded_file)
-    ingredients = detectIngredients(uploaded_file)
+    # uploaded_file = request.files['file']
+    ingredients = {}
+    for file in request.files:
+        uploaded_file = request.files[file]
+        print(uploaded_file)
+        ingredients_detected = detectIngredients(uploaded_file)
+        ingredients.update(ingredients_detected)
     print(ingredients)
     recipes = mongo.db.recipes.find()
     response = json_util.dumps(recipes)
