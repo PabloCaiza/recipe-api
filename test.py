@@ -88,7 +88,7 @@ def predictIngredientes():
     diccionario = {
         "status": 200,
         "data": response,
-        "ingredients": ingredients
+        "ingredients": ingredients.keys()
     }
     return jsonify(diccionario)
 
