@@ -58,6 +58,7 @@ def detectIngredients(image):
 @app.route('/predictIngredients', methods=['POST'])
 def predictIngredientes():
     uploaded_file = request.files['file']
+    print("files")
     print(uploaded_file)
     ingredients = detectIngredients(uploaded_file)
     print(ingredients)
