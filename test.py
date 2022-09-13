@@ -5,12 +5,16 @@ from flask import Flask, jsonify, request
 from flask_pymongo import PyMongo
 from bson import json_util
 from dotenv import load_dotenv
+from google.cloud import translate
 import json
 import os
 
 load_dotenv()
 app = Flask(__name__)
 PATH_TO_SAVED_MODEL = "saved_model"
+project_id = os.getenv("PROJECT_ID", "")
+parent = f"projects/{project_id}"
+client = translate.TranslationServiceClient()
 
 app.config["MONGO_URI"] = "mongodb+srv://{}:{}@cluster0.uwltrza.mongodb.net/mineria".format(os.getenv("MONGO_USERNAME"),
                                                                                             os.getenv("MONGO_PASSWORD"))
@@ -30,6 +34,16 @@ category_index = {
 
 def load_image_into_numpy_array(path):
     return np.array(Image.open(path))
+
+
+def translate_text(target_language_code, content):
+    response = client.translate_text(contents=content,
+                                     target_language_code=target_language_code,
+                                     parent=parent)
+    translated_items = []
+    for translation in response.translations:
+        translated_items.append(translation.translated_text)
+    return translated_items
 
 
 def detectIngredients(image):
@@ -85,10 +99,12 @@ def predictIngredientes():
 
     response = sorted(possibleRecipes, key=lambda d: d['countedElements'], reverse=True)
     response = response[:10]
+    for r in response:
+        r['ingredients'] = translate_text('es', r['ingredients'])
     diccionario = {
         "status": 200,
         "data": response,
-        "ingredients": list(ingredients.keys())
+        "ingredients": translate_text('es', list(ingredients.keys()))
     }
     return jsonify(diccionario)
 

@@ -7,3 +7,4 @@ boto3==1.24.63
 Flask-PyMongo==2.3.0
 pymongo[srv]==3.11
 python-dotenv==0.21.0
+google-cloud-translate==3.8.2
